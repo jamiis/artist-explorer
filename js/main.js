@@ -205,6 +205,7 @@
         self.runtime = ko.observable();
         self.synopsis = ko.observable();
         self.rottenTomatoesLink = ko.observable();
+        self.trailerEmbedLink = ko.observable();
 
         // extra fields
         self.synopsisExists = ko.observable();
@@ -265,6 +266,14 @@
         movieInfoModel.synopsis(movie.synopsis)
         movieInfoModel.synopsisExists(movie.synopsis ? true:false)
         movieInfoModel.rottenTomatoesLink(movie.links.alternate)
+
+        $.ajax(serverBasePath+'/api/trailer/' + movie.title).then(function(data) {
+            console.log('trailer', data)
+                // TODO if data returns results
+            movieInfoModel.trailerEmbedLink(
+                '//www.youtube.com/embed/' + data.id.videoId
+            );
+        })
 
         //TODO rotton tomatoes link?
         //movieInfoModel.spotifyLink(artist.external_urls.spotify)

@@ -3,7 +3,7 @@ from functools import  wraps
 from flask_cors import CORS, cross_origin
 from werkzeug.contrib.cache import SimpleCache
 from rottentomatoes import RT
-import pyen, os, requests
+import pyen, os, requests, youtube
 
 cache = SimpleCache(threshold=20000)
 
@@ -76,6 +76,12 @@ def get_movie(movie_id):
 @cached(timeout=30 * 60)
 def search_movie(movie_title):
     return jsonify({'arr': rt.search(movie_title)})
+
+@app.route('/api/trailer/<movie_title>')
+@cached(timeout=30 * 60)
+def get_trailer_movie(movie_title):
+    trailer = youtube.search(movie_title + " trailer")[0]
+    return jsonify(trailer);
 
 @app.route('/api/related/<movie_id>')
 @cached(timeout=30 * 60)
