@@ -69,22 +69,17 @@ var dndTree = (function() {
 
     function setChildrenAndUpdateForMovie(node) {
         // TODO!
-        var artists;
-        AE.getRelated(node.artist.id, exploredArtistIds).then(function(artists) {
+        var movies;
+        AE.getRelatedMovies(node.movie, exploredMovieIds).then(function(movies) {
             if (!node.children) {
                 node.children = []
             }
-
-            artists.forEach(function(artist) {
-
-                node.children.push(
-                    {
-                        'artist': artist,
-                        'children': null
-                    }
-                )
-                exploredArtistIds.push(artist.id);
-
+            movies.forEach(function(movie) {
+                node.children.push({
+                    'movie': movie,
+                    'children': null
+                });
+                exploredMovieIds.push(movie.id);
             });
             update(node);
             centerNode(node);
@@ -206,20 +201,11 @@ var dndTree = (function() {
     function toggleChildren(d) {
         if (d.children) {
             removeChildrenFromExploredMovie(d);
-            // remove removeChildrenFromExplored(d);
             d.children = null;
             update(d);
             centerNode(d);
         } else {
-            console.log("toggleChildren");
-            //TODO setChildrenAndUpdateForMovie(d);
-            /* remove
-            if (isArtist(d)) {
-                setChildrenAndUpdateForArtist(d);
-            } else if (isGenre(d)) {
-                setChildrenAndUpdateForGenre(d);
-            }
-            */
+            setChildrenAndUpdateForMovie(d);
         }
         return d;
     }

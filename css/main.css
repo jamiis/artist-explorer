@@ -189,10 +189,6 @@ h4 {
   padding-left: 0px;
 }
 
-#infobox li {
-  cursor: pointer;
-}
-
 #infobox a, #infobox a:link, #infobox a:visited {
   color: #222327;
 }

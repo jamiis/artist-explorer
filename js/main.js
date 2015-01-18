@@ -17,6 +17,10 @@
         movie: function(id) {
             var url = serverBasePath + '/api/movie/' + id;
             return Promise.resolve($.ajax(url));
+        },
+        related: function(id) {
+            var url = serverBasePath + '/api/related/' + id;
+            return Promise.resolve($.ajax(url));
         }
     };
 
@@ -58,7 +62,13 @@
         //movieApi.movie('13863').then(initRootWithMovie);
 
         // Her
-        movieApi.movie('771356295').then(initRootWithMovie);
+        //movieApi.movie('771356295').then(initRootWithMovie);
+
+        // Toy Story 3
+        //movieApi.movie('770672122').then(initRootWithMovie);
+
+        // Inception 
+        movieApi.movie('770805418').then(initRootWithMovie);
 
         /* remove
         var initArtistId = stripTrailingSlash(qs('artist_id')),
@@ -133,7 +143,6 @@
     // remove loadAllGenres();
 
     function initRootWithMovie(movie) {
-        console.log('initRootWithMovie', movie);
         dndTree.setRootMovie(movie);
         $('#genre-search').val('');
     }
@@ -299,6 +308,23 @@
         */
     }
 
+    function getRelatedMovies(movie) {
+        return new Promise(function (resolve, reject) {
+            // TODO remove repeat artists
+            return movieApi.related(movie.id).then(function (data) {
+                if (!repeatArtists) {
+                    console.log("TODO repeatMovies");
+                    /* TODO
+                    data.artists = data.artists.filter(function (artist) {
+                        return excludeList.indexOf(artist.id) === -1;
+                    });
+                    */
+                }
+                resolve(data.movies);
+            });
+        });
+    }
+
     function getRelated(artistId, excludeList) {
         return new Promise(function (resolve, reject) {
             return api.getArtistRelatedArtists(artistId).then(function (data) {
@@ -401,9 +427,8 @@
                     return false;
                 },
                 select: function (event, ui) {
-                    // TODO change .val() and parm to initRootWithArtist
-                    $('#artist-search').val(ui.item.name);
-                    initRootWithArtist(ui.item);
+                    $('#artist-search').val(ui.item.title);
+                    initRootWithMovie(ui.item);
                     return false;
                 }
             })
@@ -444,7 +469,6 @@
                     return false;
                 },
                 select: function (event, ui) {
-                    // TODO
                     $('#genre-search').val(ui.item.value);
                     initRootWithGenre(ui.item.value);
                     return false;
@@ -500,6 +524,7 @@
     window.AE = {
         getSuitableImage: getSuitableImage,
         getRelated: getRelated,
+        getRelatedMovies: getRelatedMovies,
         getArtistsForGenre: getArtistsForGenre,
         getInfoCancel: getInfoCancel,
         getInfo: getInfo,

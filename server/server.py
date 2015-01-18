@@ -77,12 +77,13 @@ def get_movie(movie_id):
 def search_movie(movie_title):
     return jsonify({'arr': rt.search(movie_title)})
 
-@app.route('/api/related/<movie_title>')
+@app.route('/api/related/<movie_id>')
 @cached(timeout=30 * 60)
-def get_related_movie(movie_title):
+def get_related_movie(movie_id):
     payload = {'apikey' : RT_KEY, 'limit': '5'}
-    url = 'http://api.rottentomatoes.com/api/public/v1.0/movies/' + movie_title + '/similar.json'
-    return jsonify(requests.get(url, params=payload).json());
+    url = 'http://api.rottentomatoes.com/api/public/v1.0/movies/' + movie_id + '/similar.json'
+    recommendations = requests.get(url, params=payload).json()
+    return jsonify(recommendations);
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=10000)
