@@ -2,7 +2,8 @@ from flask import Flask, jsonify, request
 from functools import  wraps
 from flask_cors import CORS, cross_origin
 from werkzeug.contrib.cache import SimpleCache
-import pyen
+from rottentomatoes import RT
+import pyen, os
 
 cache = SimpleCache(threshold=20000)
 
@@ -11,12 +12,18 @@ app = Flask(__name__)
 #Allowed origins
 ORIGINS = ['*']
 
+app.config.from_object('keys')
+
+# Make sure you have server/keys.py file with rottentomatoes api (RT_KEY) defined
+rt = RT(app.config['RT_KEY'])
+
 app.config['CORS_HEADERS'] = "Content-Type"
 app.config['CORS_RESOURCES'] = {r"/*": {"origins": ORIGINS}}
 
 cors = CORS(app)
 
 # Make sure ECHO_NEST_API_KEY environment variable is set
+os.environ['ECHO_NEST_API_KEY'] = app.config['ECHO_NEST_API_KEY']
 en = pyen.Pyen()
 
 def cached(timeout=5 * 60, key='view/%s'):
@@ -60,6 +67,17 @@ def get_genre_artists(genre_name):
 def get_all_genres():
     response = en.get('genre/list', results=2000)
     return jsonify(response)
+
+@app.route('/api/movie/<movie_id>')
+@cached(timeout=30 * 60)
+def get_movie(movie_id):
+    # TODO implement. or add trailer and imdb to response
+    return rt.info(movie_id)
+
+@app.route('/api/search/<movie_title>')
+@cached(timeout=30 * 60)
+def search_movie(movie_title):
+    return jsonify({'data': rt.search(movie_title)})
 
 
 if __name__ == '__main__':

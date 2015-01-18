@@ -6,14 +6,27 @@
     var playPopTrackTimeoutId;
     var api = new SpotifyWebApi();
 
+    //replace with configured servers uri
+    var serverBasePath = "http://localhost:10000";
+
+    var movieApi = {
+        search: function(title) {
+            var url = serverBasePath+'/api/search/' + title;
+            return Promise.resolve($.ajax(url));
+        },
+        movie: function(id) {
+            var url = serverBasePath + '/api/movie/' + id;
+            return Promise.resolve($.ajax(url));
+        }
+    };
+
+    movieApi.search('rocky').then(function(data) { console.log(data) });
+
     var showCompletion = true;
     var repeatArtists = false;
 
     //default to US
     var userCountry = "US";
-
-    //replace with configured servers uri
-    var serverBasePath = "http://localhost:10000";
 
     var loadAllGenresUri = serverBasePath + "/api/genres"
     var loadArtistInfoUri = serverBasePath + "/api/artist-info/"
