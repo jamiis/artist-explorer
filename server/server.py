@@ -8,19 +8,16 @@ import pyen, os, requests
 cache = SimpleCache(threshold=20000)
 
 app = Flask(__name__)
-
-#Allowed origins
-ORIGINS = ['*']
-
 app.config.from_object('keys')
 
 # Make sure you have server/keys.py file with rottentomatoes api (RT_KEY) defined
 RT_KEY = app.config['RT_KEY']
 rt = RT(RT_KEY)
 
+#Allowed origins
+ORIGINS = ['*']
 app.config['CORS_HEADERS'] = "Content-Type"
 app.config['CORS_RESOURCES'] = {r"/*": {"origins": ORIGINS}}
-
 cors = CORS(app)
 
 # Make sure ECHO_NEST_API_KEY environment variable is set
@@ -73,7 +70,7 @@ def get_all_genres():
 @cached(timeout=30 * 60)
 def get_movie(movie_id):
     # TODO implement. or add trailer and imdb to response
-    return rt.info(movie_id)
+    return jsonify(rt.info(movie_id))
 
 @app.route('/api/search/<movie_title>')
 @cached(timeout=30 * 60)
@@ -83,7 +80,6 @@ def search_movie(movie_title):
 @app.route('/api/related/<movie_title>')
 @cached(timeout=30 * 60)
 def get_related_movie(movie_title):
-    import pdb; pdb.set_trace();
     payload = {'apikey' : RT_KEY, 'limit': '5'}
     url = 'http://api.rottentomatoes.com/api/public/v1.0/movies/' + movie_title + '/similar.json'
     return jsonify(requests.get(url, params=payload).json());

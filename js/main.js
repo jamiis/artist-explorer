@@ -11,7 +11,7 @@
 
     var movieApi = {
         search: function(title) {
-            var url = serverBasePath+'/api/search/' + title;
+            var url = serverBasePath +'/api/search/' + title;
             return Promise.resolve($.ajax(url));
         },
         movie: function(id) {
@@ -42,6 +42,7 @@
     $('#rightpane').height($(window).height());
 
     function setRepeatArtists() {
+        // TODO
         if (document.getElementById('repeatArtists').checked) {
             repeatArtists = true;
         } else {
@@ -50,6 +51,16 @@
     }
 
     function initContainer() {
+        // Princess Mononoke default
+        //movieApi.movie('10144').then(initRootWithMovie);
+
+        // Pulp Fiction
+        //movieApi.movie('13863').then(initRootWithMovie);
+
+        // Her
+        movieApi.movie('771356295').then(initRootWithMovie);
+
+        /* remove
         var initArtistId = stripTrailingSlash(qs('artist_id')),
             initGenre = stripTrailingSlash(qs('genre'));
 
@@ -58,8 +69,9 @@
         } else if (initGenre) {
             initRootWithGenre(initGenre);
         } else {
-            api.getArtist('43ZHCT0cAZBISjO8DG9PnE').then(initRootWithArtist);
+            remove api.getArtist('43ZHCT0cAZBISjO8DG9PnE').then(initRootWithArtist);
         }
+        */
     }
 
     window.addEventListener('load', function () {
@@ -77,10 +89,10 @@
             showCompletion = false;
             e.preventDefault();
             var search = document.getElementById('artist-search');
-            api.searchArtists(
-                search.value.trim(),
-                { market: userCountry }
-                ).then(function (data) {
+            // TODO figure out what is going on with submit
+            // TODO change returned data to movies
+            api.searchArtists(search.value.trim(), { market: userCountry })
+                .then(function (data) {
                 if (data.artists && data.artists.items.length) {
                     initRootWithArtist(data.artists.items[0]);
                 }
@@ -89,6 +101,7 @@
         }, false);
 
 
+        /* remove
         var formGenre = document.getElementById('search-genre');
         formGenre.addEventListener('submit', function (e) {
             showCompletion = false;
@@ -97,6 +110,7 @@
             var genreName = search.value.trim();
             initRootWithGenre(genreName);
         }, false);
+        */
 
     }, false);
 
@@ -116,7 +130,13 @@
 
     var allGenres = [];
 
-    loadAllGenres();
+    // remove loadAllGenres();
+
+    function initRootWithMovie(movie) {
+        console.log('initRootWithMovie', movie);
+        dndTree.setRootMovie(movie);
+        $('#genre-search').val('');
+    }
 
     function initRootWithArtist(artist) {
         dndTree.setRoot(artist);
@@ -143,22 +163,37 @@
     }
 
     var getInfoTimeoutid;
-    function getInfo(artist) {
+    function getInfo(movie) {
         getInfoTimeoutid = window.setTimeout(function () {
-            _getInfo(artist);
+            _getInfo(movie);
             $('#rightpane').animate({ scrollTop: '0px' });
         }, 500);
     }
 
-    function getInfoCancel(artist) {
+    function getInfoCancel(movie) {
         window.clearTimeout(getInfoTimeoutid);
     }
 
-    var artistInfoModel = function() {
+    var movieInfoModel = function() {
         var self = this;
 
-        self.artistName = ko.observable();
-        self.isArtistInfoVisible = ko.observable(false);
+        // from api
+        self.movieTitle = ko.observable();
+        self.cast = ko.observableArray([]);
+        self.mpaaRating = ko.observable();
+        self.ratingAudience = ko.observable();
+        self.ratingCritics = ko.observable();
+        self.releaseDate = ko.observable();
+        self.year = ko.observable();
+        self.runtime = ko.observable();
+        self.synopsis = ko.observable();
+        self.rottenTomatoesLink = ko.observable();
+
+        // extra fields
+        self.synopsisExists = ko.observable();
+        self.isMovieInfoVisible = ko.observable(false);
+
+        // TODO old fields. remove
         self.spotifyLink = ko.observable();
         self.popularity = ko.observable();
         self.biography = ko.observable();
@@ -194,36 +229,50 @@
         Player.playForTrack(track);
     }
 
-    var artistInfoModel = new artistInfoModel()
+    var movieInfoModel = new movieInfoModel()
 
-    ko.applyBindings(artistInfoModel);
+    ko.applyBindings(movieInfoModel);
 
-    function _getInfo(artist) {
+    function _getInfo(movie) {
         $('#hoverwarning').css('display', 'none');
 
-        artistInfoModel.isArtistInfoVisible(true);
-        artistInfoModel.artistName(artist.name);
-        artistInfoModel.spotifyLink(artist.external_urls.spotify)
+        movieInfoModel.isMovieInfoVisible(true);
+        movieInfoModel.movieTitle(movie.title);
+        movieInfoModel.cast(movie.abridged_cast);
+        movieInfoModel.mpaaRating(movie.mpaaRating);
+        movieInfoModel.ratingAudience(movie.ratingAudience);
+        movieInfoModel.ratingCritics(movie.ratingCritics);
+        movieInfoModel.releaseDate(movie.releaseDate);
+        movieInfoModel.year(movie.year);
+        movieInfoModel.runtime(movie.runtime);
+        movieInfoModel.synopsis(movie.synopsis)
+        movieInfoModel.synopsisExists(movie.synopsis ? true:false)
+        movieInfoModel.rottenTomatoesLink(movie.links.alternate)
 
-        drawChart(artist.popularity);
+        //TODO rotton tomatoes link?
+        //movieInfoModel.spotifyLink(artist.external_urls.spotify)
 
+        // TODO fix drawChart(artist.popularity);
+
+        /*
         $.ajax({
-            url: loadArtistInfoUri + artist.uri
-        }).done(function (data) {
+            url: '/api/movie/' + movie.id
+        }).then(function (data) {
+            // get first biography
             var bioFound = false;
             if (data.artist.biographies) {
                 data.artist.biographies.forEach(function (biography) {
                     if (!biography.truncated && !bioFound) {
-                        artistInfoModel.biography(biography.text);
+                        movieInfoModel.biography(biography.text);
                         bioFound = true;
                     }
                 });
             }
-            artistInfoModel.bioExists(bioFound);
+            movieInfoModel.bioExists(bioFound);
 
-            artistInfoModel.genres([]);
+            movieInfoModel.genres([]);
             data.artist.genres.forEach(function (genre) {
-                artistInfoModel.genres.push(
+                movieInfoModel.genres.push(
                     {
                         'name': genre.name,
                         'titleCaseName': toTitleCase(genre.name),
@@ -234,9 +283,9 @@
 
         api.getArtistTopTracks(artist.id, userCountry).then(function (data) {
             Player.playForTrack(data.tracks[0]);
-            artistInfoModel.topTracks([]);
+            movieInfoModel.topTracks([]);
             data.tracks.forEach(function (track, i) {
-                artistInfoModel.topTracks.push({
+                movieInfoModel.topTracks.push({
                     'isPlaying': i == 0 ? ko.observable(true): ko.observable(false),
                     'id': track.id,
                     'name': track.name,
@@ -247,6 +296,7 @@
         }, function (err) {
             Player.clearMusic();
         });
+        */
     }
 
     function getRelated(artistId, excludeList) {
@@ -351,6 +401,7 @@
                     return false;
                 },
                 select: function (event, ui) {
+                    // TODO change .val() and parm to initRootWithArtist
                     $('#artist-search').val(ui.item.name);
                     initRootWithArtist(ui.item);
                     return false;
@@ -393,6 +444,7 @@
                     return false;
                 },
                 select: function (event, ui) {
+                    // TODO
                     $('#genre-search').val(ui.item.value);
                     initRootWithGenre(ui.item.value);
                     return false;
@@ -454,6 +506,7 @@
         changeNumberOfArtists: changeNumberOfArtists,
         setRepeatArtists: setRepeatArtists,
         toTitleCase: toTitleCase,
-        artistInfoModel: artistInfoModel
+        serverBasePath: serverBasePath,
+        movieInfoModel: movieInfoModel
     };
 })();

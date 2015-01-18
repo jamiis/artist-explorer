@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Artist Explorer</title>
+    <title>Movie Explorer</title>
     <meta charset="utf-8">
     <!-- <link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css"> -->
     <link rel="stylesheet" href="css/jquery-ui.min.css">
@@ -22,72 +22,58 @@
       <div id="rightpane">
         <div id="config">
           <h4>Configuration </h4>
-          <div id="volume-container">
-            <div class="range-desc">Volume:</div>
-            <div class="range-bar">
-              <input type="range" class="slider" min="0" max="1" step="0.05" oninput="Player.setVolume(this.value)"/>
-            </div>
-          </div>
 
           <div id="range-container">
-            <div class="range-desc">Max #artists to expand:</div>
+            <div class="range-desc">Max #movies to expand:</div>
             <div class="range-bar">
-              <input type="range" class="slider" min="1" max="20" step="1" oninput="AE.changeNumberOfArtists(this.value)"/>
-              <div id="range-indicator">10</div>
+              <input type="range" class="slider" min="1" max="5" step="1" oninput="AE.changeNumberOfArtists(this.value)"/>
+              <div id="range-indicator">3</div>
             </div>
           </div>
         </div>
         <div id="repeat-artists-container">
-          Expand already explored artists:
+          Expand already explored movies:
           <div id="checkbox-div">
             <input type="checkbox" id="repeatArtists" onclick="AE.setRepeatArtists()">
           </div>
         </div>
         <hr>
-        <div data-bind="visible: !isArtistInfoVisible()" id="hoverwarning">
+        <div data-bind="visible: !isMovieInfoVisible()" id="hoverwarning">
           <h4>Help</h4>
-          <ul>
-            <li>Click on an artist to see related artists. </li>
-            <li>Hover over an artist to hear a sample of their music.</li>
-            <li>Enter an artist name or a genre and explore relationships between over 2,000,000 artists on Spotify.</li>
-          </ul>
+            <p>
+            Enter a movie title and explore relationships 
+            to help you find what you want to watch!
+            Click on an movie to see related movies. 
+            </p>
           <h4>Info</h4>
-          Artist Explorer displays data from two great music APIs: <a target="_blank" href="https://developer.spotify.com/web-api/">the Spotify Web API </a> and <a target="_blank" href="http://developer.echonest.com/docs/v4">the Echo Nest API </a>
+          Movie Explorer is a fork of Spotify's excellent 
+          <a target="_blank" href="https://github.com/fsahin/artist-explorer">Artist Explorer</a>
+          and uses the 
+          <a target="_blank" href="http://developer.rottentomatoes.com/">RottenTomatoes</a> 
+          API provided by 
+          <a target="_blank" href="www.mashery.com">Mashery</a>.
         </div>
 
-        <!-- Artist Info -->
-        <div data-bind="visible: isArtistInfoVisible" id="infobox">
-          <h4>Artist Info </h4>
-          <a target="_blank" data-bind="text: artistName, attr: { href:spotifyLink }" id="artistName"> </a>
-          <p </p>
-          <div id="chart_div" style="width: 350px; height: 120px;"></div>
-
-          <h4>Popular Tracks</h4>
-
-          <ul data-bind="visible: topTracks().length > 0, foreach: topTracks" id="popularTracks">
-            <li data-bind="event: { mouseover: $parent.playTrack, mouseout: $parent.playTrackCancel }, css: {active: isPlaying}" class = "now-playing">
-              <a target="_blank" data-bind="text: name, attr: { href:spotifyLink }"> </a>
-            </li>
-          </ul>
-
-          <div data-bind="visible: topTracks().length <= 0" id="divPopularTracks" class="alert">
-            Oops, seems like there are no available tracks in your country
-          </div>
+        <!-- Movie Info -->
+        <div data-bind="visible: isMovieInfoVisible" id="infobox">
+          <h4>Movie Info </h4>
+          <h3>
+              <a target="_blank" data-bind="text: movieTitle, attr: { href:rottenTomatoesLink }" id="movieTitle"></a>
+          </h3>
+          <!-- TODO tomato meter <div id="chart_div" style="width: 350px; height: 120px;"></div> -->
 
           <hr>
 
-          <div data-bind="visible: genres().length > 0">
-            <h4 id ="main-genres-label">Main Genres</h4>
-            <ul data-bind="foreach: genres" id="mainGenres">
-              <li>
-                <a data-bind="text: titleCaseName, click: $parent.switchToGenre"></a>
-              </li>
-            </ul>
+          <div data-bind="visible: synopsisExists" id="bigoraphyDiv">
+            <h4 id ="synopsis-label">Synopsis</h4>
+            <p data-bind="text: synopsis" id="synopsis"> </p>
           </div>
 
-          <div data-bind="visible: bioExists" id="bigoraphyDiv">
-            <h4 id ="biography-label">Biography</h4>
-            <p data-bind="text: biography" id="biography"> </p>
+          <div data-bind="visible: cast().length > 0">
+            <h4 id ="main-cast-label">Cast</h4>
+            <ul data-bind="foreach: cast" id="mainCast">
+              <li data-bind="text: name"></li>
+            </ul>
           </div>
         </div>
       </div>
@@ -103,24 +89,20 @@
               <span class="icon-bar"></span>
               </button>
               <a class="navbar-brand" href="">
-              <span class="navbar-logo">Spotify</span>
-              <span class="navbar-title">Artist Explorer</span>
+              <span class="navbar-title">Movie Explorer</span>
               </a>
             </div>
             <div class="collapse navbar-collapse">
               <ul class="nav navbar-nav navbar-right">
-                <li class="active"><a target="_blank" href="https://github.com/fsahin/artist-explorer">See the code</a></li>
+                <li class="active"><a target="_blank" href="https://github.com/jamiis/movie-explorer">See the code</a></li>
               </ul>
             </div>
             <!--/.nav-collapse -->
           </div>
         </div>
         <div id="search" class="row">
-          <form id="search-artist" class="form-horizontal col-sm-6 col-md-6" role="form">
+          <form id="search-artist" class="form-horizontal col-sm-12 col-md-12" role="form">
             <input id="artist-search" class="form-control" placeholder="Search for an Artist">
-          </form>
-          <form id="search-genre" class="form-horizontal col-sm-6 col-md-6" role="form">
-            <input id="genre-search" class="form-control" placeholder="Search for a Genre">
           </form>
         </div>
         <div id="tree-container"></div>

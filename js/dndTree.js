@@ -8,6 +8,7 @@ var dndTree = (function() {
     var rightPaneWidth = 350;
 
     var exploredArtistIds = [];
+    var exploredMovieIds = [];
 
     // avoid clippath issue by assigning each image its own clippath
     var clipPathId = 0;
@@ -66,6 +67,30 @@ var dndTree = (function() {
         zoomListener.translate([x, y]);
     }
 
+    function setChildrenAndUpdateForMovie(node) {
+        // TODO!
+        var artists;
+        AE.getRelated(node.artist.id, exploredArtistIds).then(function(artists) {
+            if (!node.children) {
+                node.children = []
+            }
+
+            artists.forEach(function(artist) {
+
+                node.children.push(
+                    {
+                        'artist': artist,
+                        'children': null
+                    }
+                )
+                exploredArtistIds.push(artist.id);
+
+            });
+            update(node);
+            centerNode(node);
+        });
+    }
+
     function setChildrenAndUpdateForArtist(node) {
         var artists;
         AE.getRelated(node.artist.id, exploredArtistIds).then(function(artists) {
@@ -110,6 +135,14 @@ var dndTree = (function() {
         });
     }
 
+    function initWithMovie(movie) {
+        exploredMovieIds.push(movie.id);
+        return {
+            'movie' : movie,
+            'children': null,
+        }
+    };
+
     function initWithArtist(artist) {
         exploredArtistIds.push(artist.id);
         return {
@@ -136,6 +169,16 @@ var dndTree = (function() {
     }
 
 
+    function removeExpandedMovieId(d) {
+        if (d.children) {
+            d.children.forEach(function(node) {
+                removeExpandedMovieId(node);
+            });
+        }
+        var indexToRem = exploredMovieIds.indexOf(d.movie.id);
+        exploredMovieIds.splice(indexToRem, 1);
+    }
+
     function removeExpandedId(d) {
         if (d.children) {
             d.children.forEach(function(node) {
@@ -144,6 +187,12 @@ var dndTree = (function() {
         }
         var indexToRem = exploredArtistIds.indexOf(d.artist.id);
         exploredArtistIds.splice(indexToRem, 1);
+    }
+
+    function removeChildrenFromExploredMovie(d) {
+        d.children.forEach(function(node) {
+            removeExpandedId(node);
+        });
     }
 
     function removeChildrenFromExplored(d) {
@@ -156,16 +205,21 @@ var dndTree = (function() {
     // Toggle children function
     function toggleChildren(d) {
         if (d.children) {
-            removeChildrenFromExplored(d);
+            removeChildrenFromExploredMovie(d);
+            // remove removeChildrenFromExplored(d);
             d.children = null;
             update(d);
             centerNode(d);
         } else {
+            console.log("toggleChildren");
+            //TODO setChildrenAndUpdateForMovie(d);
+            /* remove
             if (isArtist(d)) {
                 setChildrenAndUpdateForArtist(d);
             } else if (isGenre(d)) {
                 setChildrenAndUpdateForGenre(d);
             }
+            */
         }
         return d;
     }
@@ -214,12 +268,12 @@ var dndTree = (function() {
                 return "translate(" + source.y0 + "," + source.x0 + ")";
             })
             .on("mouseover", function(d) {
-                if ('artist' in d) {
-                    AE.getInfo(d.artist);
+                if ('movie' in d) {
+                    AE.getInfo(d.movie);
                 }
             })
             .on("mouseout", function(d) {
-                if ('artist' in d) {
+                if ('movie' in d) {
                     AE.getInfoCancel();
                 }
             })
@@ -241,12 +295,14 @@ var dndTree = (function() {
                 return d.children || d._children ? "end" : "start";
             })
             .text(function(d) {
+                return d.movie.title
+                /* remove
                 if (isArtist(d)) {
                     return d.artist.name;
                 } else if (isGenre(d)){
                     return "Genre:" + AE.toTitleCase(d.genre.name);
                 }
-
+                */
             })
             .style("fill-opacity", 0);
 
@@ -260,17 +316,30 @@ var dndTree = (function() {
 
         nodeEnter.append("image")
             .attr("xlink:href", function(d) {
+                var posters = d.movie.posters;
+                if (!posters) {
+                    return AE.serverBasePath + '/img/rottentomatoes.thumbnail.png';
+                } 
+                else if (posters.original) { return posters.original }
+                else if (posters.detailed) { return posters.detailed }
+                else if (posters.profile) { return posters.profile }
+                else if (posters.thumbnail) { return posters.thumbnail }
+                else { return '' }
+                /* remove
                 if (isArtist(d)) {
                   return AE.getSuitableImage(d.artist.images);
                 } else {
                   return 'img/spotify.jpeg';
                 }
+                */
             })
             .attr("x", "-32px")
             .attr("y", "-32px")
             .attr("clip-path", "url(#clipCircle" + clipPathId + ")")
             .attr("width",
               function(d) {
+                  return 64;
+                  /* TODO fix this shit
                   if (isArtist(d)) {
                       var image = d.artist.images[1];
                       if (!image) {
@@ -284,9 +353,12 @@ var dndTree = (function() {
                   } else {
                     return 64;
                   }
+                  */
               })
             .attr("height",
               function(d) {
+                  return 64;
+                  /* TODO fix this shit
                   if (isArtist(d)) {
 
                       var image = d.artist.images[1];
@@ -301,6 +373,7 @@ var dndTree = (function() {
                   } else {
                     return 64;
                   }
+                  */
               })
 
         // Transition nodes to their new position.
@@ -379,6 +452,15 @@ var dndTree = (function() {
     var svgGroup = baseSvg.append("g");
 
     return {
+         "setRootMovie" : function(movie) {
+            exploredMovieIds = []
+            root = initWithMovie(movie);
+            root.x0 = viewerHeight / 2;
+            root.y0 = 0;
+            update(root);
+            centerNode(root);
+            click(root);
+        },
          "setRoot" : function(artist) {
             exploredArtistIds = []
             root = initWithArtist(artist);
