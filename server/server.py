@@ -3,7 +3,7 @@ from functools import  wraps
 from flask_cors import CORS, cross_origin
 from werkzeug.contrib.cache import SimpleCache
 from rottentomatoes import RT
-import pyen, os
+import pyen, os, requests
 
 cache = SimpleCache(threshold=20000)
 
@@ -15,7 +15,8 @@ ORIGINS = ['*']
 app.config.from_object('keys')
 
 # Make sure you have server/keys.py file with rottentomatoes api (RT_KEY) defined
-rt = RT(app.config['RT_KEY'])
+RT_KEY = app.config['RT_KEY']
+rt = RT(RT_KEY)
 
 app.config['CORS_HEADERS'] = "Content-Type"
 app.config['CORS_RESOURCES'] = {r"/*": {"origins": ORIGINS}}
@@ -79,6 +80,13 @@ def get_movie(movie_id):
 def search_movie(movie_title):
     return jsonify({'arr': rt.search(movie_title)})
 
+@app.route('/api/related/<movie_title>')
+@cached(timeout=30 * 60)
+def get_related_movie(movie_title):
+    import pdb; pdb.set_trace();
+    payload = {'apikey' : RT_KEY, 'limit': '5'}
+    url = 'http://api.rottentomatoes.com/api/public/v1.0/movies/' + movie_title + '/similar.json'
+    return jsonify(requests.get(url, params=payload).json());
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=10000)
