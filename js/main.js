@@ -20,8 +20,6 @@
         }
     };
 
-    movieApi.search('rocky').then(function(data) { console.log(data) });
-
     var showCompletion = true;
     var repeatArtists = false;
 
@@ -299,14 +297,14 @@
         document.getElementById('range-indicator').innerHTML = value;
     }
 
-    function createAutoCompleteDiv(artist) {
-        if (!artist) {
+    function createAutoCompleteDiv(movie) {
+        if (!movie) {
             return;
         }
         var val = '<div class="autocomplete-item">' +
             '<div class="artist-icon-container">' +
-            '<img src="' + getSuitableImage(artist.images) + '" class="circular artist-icon" />' +
-            '<div class="artist-label">' + artist.name + '</div>' +
+            '<img src="' + getSuitableThumbnail(movie.posters.thumbnail) + '" class="circular artist-icon" />' +
+            '<div class="artist-label">' + movie.title + '</div>' +
             '</div>' +
             '</div>';
         return val;
@@ -339,22 +337,12 @@
             .autocomplete({
                 minLength: 0,
                 source: function (request, response) {
-                    api.searchArtists(request.term + '*', {'limit': 50, market: userCountry}).then(function (data) {
-                        if (data.artists && data.artists.items.length) {
-                            var res = [];
-                            data.artists.items.forEach(function (artist) {
-                                res.push(artist);
-                            });
-                            if (showCompletion) {
-                                response(res);
-                            } else {
-                                response([]);
-                            }
-                        }
-                    }, function (err) {
-                        if (err.status == 400) {
-                            setUnavailCountryErrorMessage();
-                            return;
+                    movieApi.search(request.term).then(function(data) {
+                        response(data.arr)
+                    },
+                    function(err) {
+                        if (err.status == 400){
+                            console.log('error searching for movie', err)
                         }
                     });
                 },
@@ -426,6 +414,21 @@
 
         var chart = new google.visualization.Gauge(document.getElementById('chart_div'));
         chart.draw(popData, options);
+    }
+
+    function getSuitableThumbnail(thumbnail) {
+        console.log(thumbnail);
+
+        var splitThumb = thumbnail.split("/");
+        var file = splitThumb[splitThumb.length-1];
+        var movieDoesntHavePoster = (file == "poster_default_thumb.gif");
+
+        if (!thumbnail || movieDoesntHavePoster) {
+            //&& thumbnail.width > minSize && image.width > 64 {
+            return 'img/rottentomatoes.thumbnail.png';
+        } else {
+            return thumbnail;
+        }
     }
 
     function getSuitableImage(images) {

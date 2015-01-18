@@ -77,7 +77,7 @@ def get_movie(movie_id):
 @app.route('/api/search/<movie_title>')
 @cached(timeout=30 * 60)
 def search_movie(movie_title):
-    return jsonify({'data': rt.search(movie_title)})
+    return jsonify({'arr': rt.search(movie_title)})
 
 
 if __name__ == '__main__':
