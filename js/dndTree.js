@@ -131,7 +131,7 @@ var dndTree = (function() {
     }
 
     function initWithMovie(movie) {
-        exploredMovieIds.push(movie.id);
+        exploredMovieIds.push(movie.id.toString());
         return {
             'movie' : movie,
             'children': null,

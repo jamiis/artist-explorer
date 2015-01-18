@@ -26,6 +26,7 @@
 
     var showCompletion = true;
     var repeatArtists = false;
+    var repeatMovies = false;
 
     //default to US
     var userCountry = "US";
@@ -45,8 +46,15 @@
 
     $('#rightpane').height($(window).height());
 
+    function setRepeatMovies() {
+        if (document.getElementById('repeatMovies').checked) {
+            repeatMovies = true;
+        } else {
+            repeatMovies = false;
+        }
+    }
+
     function setRepeatArtists() {
-        // TODO
         if (document.getElementById('repeatArtists').checked) {
             repeatArtists = true;
         } else {
@@ -308,17 +316,14 @@
         */
     }
 
-    function getRelatedMovies(movie) {
+    function getRelatedMovies(movie, exclude) {
         return new Promise(function (resolve, reject) {
             // TODO remove repeat artists
             return movieApi.related(movie.id).then(function (data) {
-                if (!repeatArtists) {
-                    console.log("TODO repeatMovies");
-                    /* TODO
-                    data.artists = data.artists.filter(function (artist) {
-                        return excludeList.indexOf(artist.id) === -1;
+                if (!repeatMovies) {
+                    data.movies = data.movies.filter(function (movies) {
+                        return exclude.indexOf(movies.id) === -1;
                     });
-                    */
                 }
                 resolve(data.movies);
             });
@@ -530,6 +535,7 @@
         getInfo: getInfo,
         changeNumberOfArtists: changeNumberOfArtists,
         setRepeatArtists: setRepeatArtists,
+        setRepeatMovies: setRepeatMovies,
         toTitleCase: toTitleCase,
         serverBasePath: serverBasePath,
         movieInfoModel: movieInfoModel
