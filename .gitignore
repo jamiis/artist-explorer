@@ -1,2 +1,4 @@
+*.swp
+*.swo
 *keys.py
 .DS_Store
