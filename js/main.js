@@ -7,7 +7,8 @@
     var api = new SpotifyWebApi();
 
     //replace with configured servers uri
-    var serverBasePath = "http://localhost:10000";
+    // TODO fix for dev environment
+    var serverBasePath = "http://104.236.32.87:10000";
 
     var movieApi = {
         search: function(title) {
