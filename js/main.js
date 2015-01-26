@@ -8,19 +8,19 @@
 
     //replace with configured servers uri
     // TODO fix for dev environment
-    var serverBasePath = "http://104.236.32.87:10000";
+    var apiUrl = "http://api.movieexplorer.me";
 
     var movieApi = {
         search: function(title) {
-            var url = serverBasePath +'/api/search/' + title;
+            var url = apiUrl +'/api/search/' + title;
             return Promise.resolve($.ajax(url));
         },
         movie: function(id) {
-            var url = serverBasePath + '/api/movie/' + id;
+            var url = apiUrl + '/api/movie/' + id;
             return Promise.resolve($.ajax(url));
         },
         related: function(id) {
-            var url = serverBasePath + '/api/related/' + id;
+            var url = apiUrl + '/api/related/' + id;
             return Promise.resolve($.ajax(url));
         }
     };
@@ -32,11 +32,11 @@
     //default to US
     var userCountry = "US";
 
-    var loadAllGenresUri = serverBasePath + "/api/genres"
-    var loadArtistInfoUri = serverBasePath + "/api/artist-info/"
+    var loadAllGenresUri = apiUrl + "/api/genres"
+    var loadArtistInfoUri = apiUrl + "/api/artist-info/"
 
     function getGenreArtistsUri(genreId) {
-        return serverBasePath + "/api/genres/" + genreId + "/artists";
+        return apiUrl + "/api/genres/" + genreId + "/artists";
     }
 
     window.onresize = function () {
@@ -268,7 +268,7 @@
         movieInfoModel.synopsisExists(movie.synopsis ? true:false)
         movieInfoModel.rottenTomatoesLink(movie.links.alternate)
 
-        $.ajax(serverBasePath+'/api/trailer/' + movie.title).then(function(data) {
+        $.ajax(apiUrl+'/api/trailer/' + movie.title).then(function(data) {
             console.log('trailer', data)
                 // TODO if data returns results
             movieInfoModel.trailerEmbedLink(
@@ -547,7 +547,7 @@
         setRepeatArtists: setRepeatArtists,
         setRepeatMovies: setRepeatMovies,
         toTitleCase: toTitleCase,
-        serverBasePath: serverBasePath,
+        apiUrl: apiUrl,
         movieInfoModel: movieInfoModel
     };
 })();

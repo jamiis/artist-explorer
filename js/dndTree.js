@@ -304,7 +304,7 @@ var dndTree = (function() {
             .attr("xlink:href", function(d) {
                 var posters = d.movie.posters;
                 if (!posters) {
-                    return AE.serverBasePath + '/img/rottentomatoes.thumbnail.png';
+                    return AE.apiUrl + '/img/rottentomatoes.thumbnail.png';
                 } 
                 else if (posters.original) { return posters.original }
                 else if (posters.detailed) { return posters.detailed }
