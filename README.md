@@ -1,23 +1,31 @@
-Artist Explorer
+Movie Explorer
 ===============
 
-See Artist Explorer at [artistexplorer.spotify.com](https://artistexplorer.spotify.com/)
+See Movie Explorer at [movieexplorer.me](https://movieexplorer.me/).
 
-Artists Explorer is a tool that helps serious music enthusiasts explore artist relationships and discover new music. Start from any artist and quickly navigate through trees of related artists, previewing their music as you go.
+This project is a fork of Spotify's awesome [Artist Explorer](https://artistexplorer.spotify.com/).
 
-The app pulls related artist information from Spotify and additional data (genre, biography) from the Echo Nest. Have a look at the documentation of these APIs at:
+Movie Explorer is a tool that helps serious movie enthusiasts explore movie relationships and discover new movies. Start from any movie and quickly navigate through trees of related movies, watching trailers as you go.
 
-* [https://developer.spotify.com/web-api/](https://developer.spotify.com/web-api/)
-* [https://developer.echonest.com/docs/v4](https://developer.echonest.com/docs/v4)
+The app pulls related movie information from Rotten Tomatoes. You will need to create a `keys.py` file at the project root with the following keys and format:
+
+```
+RT_KEY='t1s-aRandomK3y-th0'
+GOOGLE_YOUTUBE_API_KEY='you7ube-K3Y5'
+```
+
+Obviously those aren't real keys. You will need to register for Rotten Tomatoes and YouTube API keys.
 
 Running Locally
 ===============
 **Not necessary but strongly suggested:** Create a [virtualenv] (http://docs.python-guide.org/en/latest/dev/virtualenvs/) or use an existing one before installing dependencies of this project.
 
 
-Echo Nest API calls are proxied through a flask server. You need to start the server first.
+Rotten Tomatoes API calls are proxied through a flask server. You need to start the server first.
 
 ```
+virtualenv venv
+source /venv/bin/activate
 cd server
 pip install -r requirements.txt
 python server.py
@@ -30,13 +38,14 @@ python -m SimpleHTTPServer
 
 App
 ===
-<img src="./img/ScreenShot.png" width="750px"/>
+todo: insert img
 
 Consumed Libraries:
 --------------
+* [Rotten Tomatoes API](http://developer.rottentomatoes.com/)
 * [d3](http://d3js.org/)
 * [Google Gauge Charts](https://developers.google.com/chart/interactive/docs/gallery/gauge)
-* [Spotify Web API Wrapper](https://github.com/JMPerez/spotify-web-api-js)
+* [Google's YouTube API](https://developers.google.com/youtube/)
 * [geoplugin](http://www.geoplugin.com/)
 * [freegeoip](https://freegeoip.net)
 
