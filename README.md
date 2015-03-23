@@ -1,12 +1,10 @@
 Movie Explorer
 ===============
 
-See Movie Explorer at [movieexplorer.me](https://movieexplorer.me/).
-
 This project is a fork of Spotify's awesome [Artist Explorer](https://artistexplorer.spotify.com/)
 and pulls movie-similarity information from the [Rotten Tomatoes API](http://developer.rottentomatoes.com/).
 
-Movie Explorer helps movie enthusiasts spatially explore movie relationships and discover new movies. Start from any movie, navigate through trees of related movies, watch trailers, and read movie metadata as you go.
+[Movie Explorer](https://movieexplorer.me/) helps movie enthusiasts spatially explore movie relationships and discover new movies. Start from any movie, navigate through trees of related movies, watch trailers, and read movie metadata as you go.
 
 ![http://movieexplorer.me](img/the-dude.png)
 
