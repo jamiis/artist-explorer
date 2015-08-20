@@ -141,8 +141,9 @@
     var handler = StripeCheckout.configure({
       key: 'pk_test_0ASIH4b0bQcMCz4MWHOgyEWP',
       locale: 'auto',
+      bitcoin: true,
+      panelLabel: 'Donate',
       token: function(token) {
-        //image: '/img/documentation/checkout/marketplace.png',
         // Use the token to create the charge with a server-side script.
         // You can access the token ID with `token.id`
       }
@@ -151,9 +152,8 @@
     $('#customButton').on('click', function(e) {
       // Open Checkout with further options
       handler.open({
-        name: 'jamiis.me',
-        description: '2 widgets',
-        amount: 2000
+        description: 'Help me build more apps!',
+        amount: 100
       });
       e.preventDefault();
     });
