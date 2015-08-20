@@ -20,10 +20,6 @@ app.config['CORS_HEADERS'] = "Content-Type"
 app.config['CORS_RESOURCES'] = {r"/*": {"origins": ORIGINS}}
 cors = CORS(app)
 
-# Make sure ECHO_NEST_API_KEY environment variable is set
-os.environ['ECHO_NEST_API_KEY'] = app.config['ECHO_NEST_API_KEY']
-en = pyen.Pyen()
-
 def cached(timeout=5 * 60, key='view/%s'):
     def decorator(f):
         @wraps(f)
@@ -38,38 +34,9 @@ def cached(timeout=5 * 60, key='view/%s'):
         return decorated_function
     return decorator
 
-
-@app.route('/api/artist-info/<artist_uri>')
-@cached(timeout=30 * 60)
-def get_artist_info(artist_uri):
-    echonest_response = en.get('artist/profile', id=artist_uri, bucket=['genre','biographies'])
-    response = {}
-    response['status'] = echonest_response['status']
-    response['artist'] = {}
-    response['artist']['genres'] = echonest_response['artist']['genres']
-    for bio in echonest_response['artist']['biographies']:
-        if ('truncated' not in bio) or bio['truncated'] == False:
-            response['artist']['biographies'] = [bio]
-            break
-
-    return jsonify(response)
-
-@app.route('/api/genres/<genre_name>/artists')
-@cached(timeout=30 * 60)
-def get_genre_artists(genre_name):
-    response = en.get('genre/artists', name=genre_name, results=15, bucket=['id:spotify'], limit=True)
-    return jsonify(response)
-
-@app.route('/api/genres')
-@cached(timeout=30 * 60)
-def get_all_genres():
-    response = en.get('genre/list', results=2000)
-    return jsonify(response)
-
 @app.route('/api/movie/<movie_id>')
 @cached(timeout=30 * 60)
 def get_movie(movie_id):
-    # TODO implement. or add trailer and imdb to response
     return jsonify(rt.info(movie_id))
 
 @app.route('/api/search/<movie_title>')
