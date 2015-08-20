@@ -107,7 +107,12 @@
             </div>
             <div class="collapse navbar-collapse">
               <ul class="nav navbar-nav navbar-right">
-                <li class="active"><a target="_blank" href="https://github.com/jamiis/movie-explorer">Code on <i class="fa fa-github fa-lg"></i></a></li>
+                <li class="active">
+                  <a id="customButton" href="">DONATE</a>
+                </li>
+                <!--
+                  <li class="active"><a target="_blank" href="https://github.com/jamiis/movie-explorer">Code on <i class="fa fa-github fa-lg"></i></a></li>
+                -->
               </ul>
             </div>
             <!--/.nav-collapse -->
@@ -131,4 +136,31 @@
   <script src="js/dndTree.js"></script>
   <script src="js/main.js"></script>
   <script src="js/audioPlayer.js"></script>
+  <script src="https://checkout.stripe.com/checkout.js"></script>
+  <script>
+    var handler = StripeCheckout.configure({
+      key: 'pk_test_0ASIH4b0bQcMCz4MWHOgyEWP',
+      locale: 'auto',
+      token: function(token) {
+        //image: '/img/documentation/checkout/marketplace.png',
+        // Use the token to create the charge with a server-side script.
+        // You can access the token ID with `token.id`
+      }
+    });
+
+    $('#customButton').on('click', function(e) {
+      // Open Checkout with further options
+      handler.open({
+        name: 'jamiis.me',
+        description: '2 widgets',
+        amount: 2000
+      });
+      e.preventDefault();
+    });
+
+    // Close Checkout on page navigation
+    $(window).on('popstate', function() {
+      handler.close();
+    });
+  </script>
 </html>
