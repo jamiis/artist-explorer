@@ -84,9 +84,9 @@
 
           <div data-bind="visible: cast().length > 0">
             <h4 id ="main-cast-label">Cast</h4>
-            <ul data-bind="foreach: cast" id="mainCast">
-              <li data-bind="text: name"></li>
-            </ul>
+            <div data-bind="foreach: cast" id="mainCast">
+              <div data-bind="text: name"></div>
+            </div>
           </div>
         </div>
       </div>
