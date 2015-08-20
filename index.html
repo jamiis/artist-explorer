@@ -61,8 +61,15 @@
         <div data-bind="visible: isMovieInfoVisible" id="infobox">
           <h4>Movie Info </h4>
           <h3>
-              <a target="_blank" data-bind="text: movieTitle, attr: { href:rottenTomatoesLink }" id="movieTitle"></a>
+              <a target="_blank" data-bind="text: movieTitle, attr: { href:rottenTomatoesLink }" id="movieTitle"></a> 
+              <span data-bind="visible: !!releaseYear">
+                (<span data-bind="text: releaseYear"> </span>)
+              </span>
           </h3>
+          <p>
+            <div><span data-bind="text: rottenTomatoesRatingCritics"> </span>% Critics</div>
+            <div><span data-bind="text: rottenTomatoesRatingAudience"> </span>% Audience</div>
+          </p>
           <!-- TODO tomato meter <div id="chart_div" style="width: 350px; height: 120px;"></div> -->
 
           <hr>

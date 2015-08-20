@@ -199,14 +199,14 @@
         self.movieTitle = ko.observable();
         self.cast = ko.observableArray([]);
         self.mpaaRating = ko.observable();
-        self.ratingAudience = ko.observable();
-        self.ratingCritics = ko.observable();
-        self.releaseDate = ko.observable();
         self.year = ko.observable();
         self.runtime = ko.observable();
         self.synopsis = ko.observable();
         self.rottenTomatoesLink = ko.observable();
         self.trailerEmbedLink = ko.observable();
+        self.releaseYear = ko.observable();
+        self.rottenTomatoesRatingCritics = ko.observable();
+        self.rottenTomatoesRatingAudience = ko.observable();
 
         // extra fields
         self.synopsisExists = ko.observable();
@@ -258,15 +258,15 @@
         movieInfoModel.isMovieInfoVisible(true);
         movieInfoModel.movieTitle(movie.title);
         movieInfoModel.cast(movie.abridged_cast);
-        movieInfoModel.mpaaRating(movie.mpaaRating);
-        movieInfoModel.ratingAudience(movie.ratingAudience);
-        movieInfoModel.ratingCritics(movie.ratingCritics);
-        movieInfoModel.releaseDate(movie.releaseDate);
+        movieInfoModel.mpaaRating(movie.mpaa_rating);
         movieInfoModel.year(movie.year);
         movieInfoModel.runtime(movie.runtime);
         movieInfoModel.synopsis(movie.synopsis)
         movieInfoModel.synopsisExists(movie.synopsis ? true:false)
         movieInfoModel.rottenTomatoesLink(movie.links.alternate)
+        movieInfoModel.rottenTomatoesRatingCritics(movie.ratings.critics_score);
+        movieInfoModel.rottenTomatoesRatingAudience(movie.ratings.audience_score);
+        movieInfoModel.releaseYear(movie.release_dates.theater.split("-")[0]);
 
         $.ajax(apiUrl+'/api/trailer/' + movie.title).then(function(data) {
             console.log('trailer', data)
