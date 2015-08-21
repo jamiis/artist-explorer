@@ -278,55 +278,6 @@
             );
             movieInfoModel.showTrailer(true);
         })
-
-        //TODO rotton tomatoes link?
-        //movieInfoModel.spotifyLink(artist.external_urls.spotify)
-
-        // TODO fix drawChart(artist.popularity);
-
-        /*
-        $.ajax({
-            url: '/api/movie/' + movie.id
-        }).then(function (data) {
-            // get first biography
-            var bioFound = false;
-            if (data.artist.biographies) {
-                data.artist.biographies.forEach(function (biography) {
-                    if (!biography.truncated && !bioFound) {
-                        movieInfoModel.biography(biography.text);
-                        bioFound = true;
-                    }
-                });
-            }
-            movieInfoModel.bioExists(bioFound);
-
-            movieInfoModel.genres([]);
-            data.artist.genres.forEach(function (genre) {
-                movieInfoModel.genres.push(
-                    {
-                        'name': genre.name,
-                        'titleCaseName': toTitleCase(genre.name),
-                    }
-                )
-            });
-        });
-
-        api.getArtistTopTracks(artist.id, userCountry).then(function (data) {
-            Player.playForTrack(data.tracks[0]);
-            movieInfoModel.topTracks([]);
-            data.tracks.forEach(function (track, i) {
-                movieInfoModel.topTracks.push({
-                    'isPlaying': i == 0 ? ko.observable(true): ko.observable(false),
-                    'id': track.id,
-                    'name': track.name,
-                    'preview_url': track.preview_url,
-                    'spotifyLink': track.external_urls.spotify,
-                });
-            });
-        }, function (err) {
-            Player.clearMusic();
-        });
-        */
     }
 
     function getRelatedMovies(movie, exclude) {
