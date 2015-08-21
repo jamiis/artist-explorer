@@ -74,8 +74,11 @@
 
           <hr>
 
-          <h4>Trailer Search</h4>
-          <iframe width="328" height="184" data-bind="attr: { src:trailerEmbedLink }" frameborder="0" allowfullscreen></iframe>
+          <!-- show trailer once youtube search query returns -->
+          <div data-bind="visible: showTrailer()">
+            <h4>Trailer Search</h4>
+            <iframe width="328" height="184" data-bind="attr: { src:trailerEmbedLink }" frameborder="0" allowfullscreen></iframe>
+          </div>
 
           <div data-bind="visible: synopsisExists" id="bigoraphyDiv">
             <h4 id ="synopsis-label">Synopsis</h4>

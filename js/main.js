@@ -207,6 +207,8 @@
         self.releaseYear = ko.observable();
         self.rottenTomatoesRatingCritics = ko.observable();
         self.rottenTomatoesRatingAudience = ko.observable();
+        self.rottenTomatoesRatingAudience = ko.observable();
+        self.showTrailer = ko.observable(false);
 
         // extra fields
         self.synopsisExists = ko.observable();
