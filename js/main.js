@@ -269,13 +269,14 @@
         movieInfoModel.rottenTomatoesRatingCritics(movie.ratings.critics_score);
         movieInfoModel.rottenTomatoesRatingAudience(movie.ratings.audience_score);
         movieInfoModel.releaseYear(movie.release_dates.theater.split("-")[0]);
-
+        movieInfoModel.showTrailer(false);
         $.ajax(apiUrl+'/api/trailer/' + movie.title).then(function(data) {
             console.log('trailer', data)
                 // TODO if data returns results
             movieInfoModel.trailerEmbedLink(
                 '//www.youtube.com/embed/' + data.id.videoId
             );
+            movieInfoModel.showTrailer(true);
         })
 
         //TODO rotton tomatoes link?
