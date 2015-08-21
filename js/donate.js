@@ -15,7 +15,7 @@
     }
 
     var handler = StripeCheckout.configure({
-      key: 'pk_test_0ASIH4b0bQcMCz4MWHOgyEWP',
+      key: 'pk_live_OhJuToHMW67bNhKIVZd6R4JB',
       locale: 'auto',
       // TODO bitcoin: true,
       panelLabel: 'Donate',
