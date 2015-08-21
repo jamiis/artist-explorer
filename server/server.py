@@ -3,7 +3,7 @@ from functools import  wraps
 from flask_cors import CORS, cross_origin
 from werkzeug.contrib.cache import SimpleCache
 from rottentomatoes import RT
-import pyen, os, requests, youtube
+import requests, youtube, stripe
 
 cache = SimpleCache(threshold=20000)
 
@@ -13,6 +13,9 @@ app.config.from_object('keys')
 # Make sure you have server/keys.py file with rottentomatoes api (RT_KEY) defined
 RT_KEY = app.config['RT_KEY']
 rt = RT(RT_KEY)
+
+# config Stripe
+stripe.api_key = app.config['STRIPE_SECRET']
 
 #Allowed origins
 ORIGINS = ['*']
@@ -33,6 +36,22 @@ def cached(timeout=5 * 60, key='view/%s'):
             return rv
         return decorated_function
     return decorator
+
+@app.route('/api/donate', methods=['POST'])
+def donate():
+    # TODO dump request json in donation mongo db
+    amount = 100 # cents
+    customer = stripe.Customer.create(
+        email=request.json['email'],
+        card=request.json['id']
+    )
+    charge = stripe.Charge.create(
+        customer=customer.id,
+        amount=amount,
+        currency='usd',
+        description='Donation (Movie Explorer)'
+    )
+    return jsonify({})
 
 @app.route('/api/movie/<movie_id>')
 @cached(timeout=30 * 60)
