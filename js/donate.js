@@ -28,7 +28,7 @@
       // Open Checkout with further options
       handler.open({
         description: 'Help me build more apps!',
-        amount: 100
+        amount: 200
       });
       e.preventDefault();
     });

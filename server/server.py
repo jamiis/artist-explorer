@@ -40,7 +40,7 @@ def cached(timeout=5 * 60, key='view/%s'):
 @app.route('/api/donate', methods=['POST'])
 def donate():
     # TODO dump request json in donation mongo db
-    amount = 100 # cents
+    amount = 200 # cents
     customer = stripe.Customer.create(
         email=request.json['email'],
         card=request.json['id']
